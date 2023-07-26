@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         platform: [esp32, esp8266]
-        build_letter: [MQTT, STAT]
+        build_letter: [mqtt, stat]
 
     steps:
       - name: Checkout Repository
@@ -42,30 +42,30 @@ jobs:
           
       - name: Prepare Modules for ${{ matrix.platform }} - Build ${{ matrix.build_letter }}
         run: |
-          targetpath=""
+          esp_ports_path=""
           if [ "${{ matrix.platform }}" == "esp32"]; then
             # Set target path for compiling the firmware and freezing external bytecode
-            targetpath="micropython/ports/esp32/"
-            echo "Selecting ${{ matrix.platform }}"
+            esp_ports_path="$PWD/micropython/ports/esp32"
+            echo "Selecting ${{ matrix.platform }} with path ${{ esp_ports_path }}"
           elif [ "${{ matrix.platform }}" == "esp8266"]; then
             # Set target path for compiling the firmware and freezing external bytecode
-            targetpath="micropython/ports/esp8266/"
-            echo "Selecting ${{ matrix.platform }}"
+            esp_ports_path="$PWD/micropython/ports/esp8266"
+            echo "Selecting ${{ matrix.platform }} with path ${{ esp_ports_path }}"
           fi
 
-          if [ "${{ matrix.build_letter }}" == "MQTT" ]; then
-            echo "Building ${{ matrix.platform }} - Build MQTT"
+          if [ "${{ matrix.build_letter }}" == "mqtt" ]; then
+            echo "Building ${{ matrix.platform }} - Build mqtt"
             # Copy modules
-            cp micropython-mqtt/mqtt_as/mqtt_as.py ${targetpath}/modules/mqtt_as.py
-          elif [ "${{ matrix.build_letter }}" == "STAT" ]; then
-            echo "Building ${{ matrix.platform }} - Build STAT"
+            cp micropython-mqtt/mqtt_as/mqtt_as.py $esp_ports_path/modules/mqtt_as.py
+          elif [ "${{ matrix.build_letter }}" == "stat" ]; then
+            echo "Building ${{ matrix.platform }} - Build stat"
             # Copy modules
-            cp MicroPython_Statistics/statistics.py ${targetpath}/modules/statistics.py
+            cp MicroPython_Statistics/statistics.py $esp_ports_path/modules/statistics.py
           fi
 
       - name: Make Build for ${{ matrix.platform }} - Build ${{ matrix.build_letter }}
         run: |
-          cd ${targetpath}
+          cd $esp_ports_path
           docker run --rm -v $HOME:$HOME -u $UID -w $PWD hvalev/esp-open-sdk make submodules
           docker run --rm -v $HOME:$HOME -u $UID -w $PWD hvalev/esp-open-sdk make
 

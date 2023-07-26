@@ -1,0 +1,79 @@
+name: Parallel Builds for ESP32 and ESP8266
+
+on:
+  workflow_dispatch:
+  # push:
+  #   branches:
+  #     - main
+  # release:
+  #   types: [created]
+
+jobs:
+  build:
+    name: Build for ESP32 or ESP8266
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        platform: [esp32, esp8266]
+        build_letter: [MQTT, STAT]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
+      - name: Set up Docker
+        uses: docker/setup-docker@v1
+
+      - name: Pull Docker Image
+        run: docker pull hvalev/esp-open-sdk:latest
+
+      - name: Clone Micropython
+        run: |
+          echo "current_tag=$(<micropython-version.txt)" >> $GITHUB_OUTPUT
+          git clone --depth 1 --branch=${current_tag} https://github.com/micropython/micropython.git .
+          
+      - name: Prepare Modules for ${{ matrix.platform }} - Build ${{ matrix.build_letter }}
+        run: |
+          targetpath = ''
+          if [ "${{ matrix.platform }}" == "esp32"]; then
+            # Set target path for compiling the firmware and freezing external bytecode
+            targetpath = '/micropython/ports/esp32/'
+            echo "Selecting ${{ matrix.platform }}"
+
+          elif [ "${{ matrix.platform }}" == "esp8266"]; then
+            # Set target path for compiling the firmware and freezing external bytecode
+            targetpath = '/micropython/ports/esp8266/'
+            echo "Selecting ${{ matrix.platform }}"
+          fi
+
+          if [ "${{ matrix.build_letter }}" == "MQTT" ]; then
+            echo "Building ${{ matrix.platform }} - Build MQTT"
+            # Copy modules
+            cp /micropython-mqtt/mqtt_as/mqtt_as.py ${targetpath}/modules/mqtt_as.py
+          elif [ "${{ matrix.build_letter }}" == "STAT" ]; then
+            echo "Building ${{ matrix.platform }} - Build STAT"
+            # Copy modules
+            cp /MicroPython_Statistics/statistics.py ${targetpath}/modules/statistics.py
+          fi
+
+      - name: Make Build for ${{ matrix.platform }} - Build ${{ matrix.build_letter }}
+        run: |
+          docker run --rm -v $HOME:$HOME -u $UID -w $PWD hvalev/esp-open-sdk make submodules
+          docker run --rm -v $HOME:$HOME -u $UID -w $PWD hvalev/esp-open-sdk make
+
+      # - name: Zip Artifacts
+      #   run: |
+      #     # Compressing artifacts for each build
+      #     cd ${{ matrix.platform }}-${{ matrix.build_letter }}-artifacts
+      #     zip -r ${{ matrix.platform }}-${{ matrix.build_letter }}-artifacts.zip .
+
+      # - name: Upload Release Asset
+      #   uses: actions/upload-release-asset@v1
+      #   with:
+      #     upload_url: ${{ github.event.release.upload_url }}
+      #     asset_path: ${{ matrix.platform }}-${{ matrix.build_letter }}-artifacts.zip
+      #     asset_name: ${{ matrix.platform }}-${{ matrix.build_letter }}-artifacts.zip
+      #     asset_content_type: application/zip

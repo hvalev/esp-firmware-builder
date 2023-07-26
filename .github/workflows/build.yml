@@ -1,0 +1,92 @@
+name: Parallel Builds for ESP32 and ESP8266
+
+on:
+  push:
+    branches:
+      - main
+  release:
+    types: [created]
+
+jobs:
+  build:
+    name: Build for ESP32 or ESP8266
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        platform: [esp32, esp8266]
+        build_letter: [A, B, C, D]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
+      - name: Set up Docker
+        uses: docker/setup-docker@v1
+
+      - name: Pull Docker Image
+        run: docker pull your_docker_image:tag
+
+      - name: Move Files Around
+        run: |
+          # Add your commands here to move files as needed
+          # For example:
+          # mv /path/to/source/directory /path/to/destination/directory
+
+      - name: Build for ${{ matrix.platform }} - Build ${{ matrix.build_letter }}
+        run: |
+          # Add separate logic for each build
+          # For example:
+          if [ "${{ matrix.build_letter }}" == "A" ]; then
+            # Commands for Build A
+            echo "Building ${{ matrix.platform }} - Build A"
+
+            # Snippet for moving files around for Build A
+            # mv /path/to/source/fileA /path/to/destination/fileA
+
+            # Generating artifact for Build A
+            touch build_artifact_A.txt
+          elif [ "${{ matrix.build_letter }}" == "B" ]; then
+            # Commands for Build B
+            echo "Building ${{ matrix.platform }} - Build B"
+
+            # Snippet for moving files around for Build B
+            # mv /path/to/source/fileB /path/to/destination/fileB
+
+            # Generating artifact for Build B
+            touch build_artifact_B.txt
+          elif [ "${{ matrix.build_letter }}" == "C" ]; then
+            # Commands for Build C
+            echo "Building ${{ matrix.platform }} - Build C"
+
+            # Snippet for moving files around for Build C
+            # mv /path/to/source/fileC /path/to/destination/fileC
+
+            # Generating artifact for Build C
+            touch build_artifact_C.txt
+          else
+            # Commands for Build D
+            echo "Building ${{ matrix.platform }} - Build D"
+
+            # Snippet for moving files around for Build D
+            # mv /path/to/source/fileD /path/to/destination/fileD
+
+            # Generating artifact for Build D
+            touch build_artifact_D.txt
+          fi
+
+      - name: Zip Artifacts
+        run: |
+          # Compressing artifacts for each build
+          cd ${{ matrix.platform }}-${{ matrix.build_letter }}-artifacts
+          zip -r ${{ matrix.platform }}-${{ matrix.build_letter }}-artifacts.zip .
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ${{ matrix.platform }}-${{ matrix.build_letter }}-artifacts.zip
+          asset_name: ${{ matrix.platform }}-${{ matrix.build_letter }}-artifacts.zip
+          asset_content_type: application/zip

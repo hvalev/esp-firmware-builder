@@ -41,15 +41,16 @@ jobs:
           git clone --depth 1 --branch=${current_tag} https://github.com/micropython/micropython.git
           
       - name: Prepare Modules for ${{ matrix.platform }} - Build ${{ matrix.build_letter }}
+        id: esp-modules
         run: |
           esp_ports_path=""
           if [ "${{ matrix.platform }}" == "esp32" ]; then
             # Set target path for compiling the firmware and freezing external bytecode
-            esp_ports_path="$PWD/micropython/ports/esp32"
+            echo 'esp_ports_path="$PWD/micropython/ports/esp32"' >> $GITHUB_OUTPUT
             echo "Selecting ${{ matrix.platform }} with path $esp_ports_path"
           elif [ "${{ matrix.platform }}" == "esp8266" ]; then
             # Set target path for compiling the firmware and freezing external bytecode
-            esp_ports_path="$PWD/micropython/ports/esp8266"
+            echo 'esp_ports_path="$PWD/micropython/ports/esp8266"' >> $GITHUB_OUTPUT
             echo "Selecting ${{ matrix.platform }} with path $esp_ports_path"
           fi
 
@@ -65,7 +66,7 @@ jobs:
 
       - name: Make Build for ${{ matrix.platform }} - Build ${{ matrix.build_letter }}
         run: |
-          cd $esp_ports_path
+          cd ${{ steps.esp-modules.outputs.esp_ports_path }}
           echo "$PWD"
           ls modules/
           docker run --rm -v $HOME:$HOME -u $UID -w $PWD hvalev/esp-open-sdk make submodules

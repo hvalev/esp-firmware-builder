@@ -45,26 +45,27 @@ jobs:
           targetpath=""
           if [ "${{ matrix.platform }}" == "esp32"]; then
             # Set target path for compiling the firmware and freezing external bytecode
-            targetpath="/micropython/ports/esp32/"
+            targetpath="micropython/ports/esp32/"
             echo "Selecting ${{ matrix.platform }}"
           elif [ "${{ matrix.platform }}" == "esp8266"]; then
             # Set target path for compiling the firmware and freezing external bytecode
-            targetpath="/micropython/ports/esp8266/"
+            targetpath="micropython/ports/esp8266/"
             echo "Selecting ${{ matrix.platform }}"
           fi
 
           if [ "${{ matrix.build_letter }}" == "MQTT" ]; then
             echo "Building ${{ matrix.platform }} - Build MQTT"
             # Copy modules
-            cp /micropython-mqtt/mqtt_as/mqtt_as.py ${targetpath}/modules/mqtt_as.py
+            cp micropython-mqtt/mqtt_as/mqtt_as.py ${targetpath}/modules/mqtt_as.py
           elif [ "${{ matrix.build_letter }}" == "STAT" ]; then
             echo "Building ${{ matrix.platform }} - Build STAT"
             # Copy modules
-            cp /MicroPython_Statistics/statistics.py ${targetpath}/modules/statistics.py
+            cp MicroPython_Statistics/statistics.py ${targetpath}/modules/statistics.py
           fi
 
       - name: Make Build for ${{ matrix.platform }} - Build ${{ matrix.build_letter }}
         run: |
+          cd ${targetpath}
           docker run --rm -v $HOME:$HOME -u $UID -w $PWD hvalev/esp-open-sdk make submodules
           docker run --rm -v $HOME:$HOME -u $UID -w $PWD hvalev/esp-open-sdk make
 

@@ -46,11 +46,11 @@ jobs:
           if [ "${{ matrix.platform }}" == "esp32"]; then
             # Set target path for compiling the firmware and freezing external bytecode
             esp_ports_path="$PWD/micropython/ports/esp32"
-            echo "Selecting ${{ matrix.platform }} with path ${{ esp_ports_path }}"
+            echo "Selecting ${{ matrix.platform }} with path $esp_ports_path"
           elif [ "${{ matrix.platform }}" == "esp8266"]; then
             # Set target path for compiling the firmware and freezing external bytecode
             esp_ports_path="$PWD/micropython/ports/esp8266"
-            echo "Selecting ${{ matrix.platform }} with path ${{ esp_ports_path }}"
+            echo "Selecting ${{ matrix.platform }} with path $esp_ports_path"
           fi
 
           if [ "${{ matrix.build_letter }}" == "mqtt" ]; then

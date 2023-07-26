@@ -66,6 +66,8 @@ jobs:
       - name: Make Build for ${{ matrix.platform }} - Build ${{ matrix.build_letter }}
         run: |
           cd $esp_ports_path
+          echo "$PWD"
+          ls modules/
           docker run --rm -v $HOME:$HOME -u $UID -w $PWD hvalev/esp-open-sdk make submodules
           docker run --rm -v $HOME:$HOME -u $UID -w $PWD hvalev/esp-open-sdk make
 

@@ -43,11 +43,11 @@ jobs:
       - name: Prepare Modules for ${{ matrix.platform }} - Build ${{ matrix.build_letter }}
         run: |
           esp_ports_path=""
-          if [ "${{ matrix.platform }}" == "esp32"]; then
+          if [ "${{ matrix.platform }}" == "esp32" ]; then
             # Set target path for compiling the firmware and freezing external bytecode
             esp_ports_path="$PWD/micropython/ports/esp32"
             echo "Selecting ${{ matrix.platform }} with path $esp_ports_path"
-          elif [ "${{ matrix.platform }}" == "esp8266"]; then
+          elif [ "${{ matrix.platform }}" == "esp8266" ]; then
             # Set target path for compiling the firmware and freezing external bytecode
             esp_ports_path="$PWD/micropython/ports/esp8266"
             echo "Selecting ${{ matrix.platform }} with path $esp_ports_path"
@@ -56,11 +56,11 @@ jobs:
           if [ "${{ matrix.build_letter }}" == "mqtt" ]; then
             echo "Building ${{ matrix.platform }} - Build mqtt"
             # Copy modules
-            cp micropython-mqtt/mqtt_as/mqtt_as.py $esp_ports_path/modules/mqtt_as.py
+            cp micropython-mqtt/mqtt_as/mqtt_as.py "$esp_ports_path/modules/mqtt_as.py"
           elif [ "${{ matrix.build_letter }}" == "stat" ]; then
             echo "Building ${{ matrix.platform }} - Build stat"
             # Copy modules
-            cp MicroPython_Statistics/statistics.py $esp_ports_path/modules/statistics.py
+            cp MicroPython_Statistics/statistics.py "$esp_ports_path/modules/statistics.py"
           fi
 
       - name: Make Build for ${{ matrix.platform }} - Build ${{ matrix.build_letter }}

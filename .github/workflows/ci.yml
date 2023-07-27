@@ -36,11 +36,13 @@ jobs:
       - name: Pull Docker Image
         run: docker pull hvalev/esp-open-sdk:latest
 
-      - name: Build Modules for ${{ matrix.platform }} - Build ${{ matrix.build_letter }}
+      - name: Clone Micropython
         run: |
           current_tag=$(<micropython-version.txt)
           git clone --depth 1 --branch=${current_tag} https://github.com/micropython/micropython.git
           
+      - name: Prepare Modules for ${{ matrix.platform }} - Build ${{ matrix.build_letter }}
+        run: |
           esp_ports_path=""
           if [ "${{ matrix.platform }}" == "esp32" ]; then
             # Set target path for compiling the firmware and freezing external bytecode
@@ -63,6 +65,9 @@ jobs:
             cp MicroPython_Statistics/statistics.py "$esp_ports_path/modules/statistics.py"
           fi
 
+      - name: Make Build for ${{ matrix.platform }} - Build ${{ matrix.build_letter }}
+        run: |
+          esp_ports_path=""
           if [ "${{ matrix.platform }}" == "esp32" ]; then
             # Set target path for compiling the firmware and freezing external bytecode
             esp_ports_path="$PWD/micropython/ports/esp32"
@@ -72,6 +77,9 @@ jobs:
             esp_ports_path="$PWD/micropython/ports/esp8266"
             echo "Selecting ${{ matrix.platform }} with path $esp_ports_path"
           fi
+          cd $esp_ports_path
+          echo "$PWD"
+          ls
           docker run --rm -v $HOME:$HOME -u $UID -w $PWD hvalev/esp-open-sdk make submodules
           docker run --rm -v $HOME:$HOME -u $UID -w $PWD hvalev/esp-open-sdk make
 

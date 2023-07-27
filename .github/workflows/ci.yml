@@ -10,13 +10,14 @@ on:
 
 jobs:
   build:
-    name: Build for ESP32 or ESP8266
+    name: Build for ESP8266
+    #TODO add for ESP32
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        platform: [esp32, esp8266]
-        build_letter: [mqtt, stat]
+        platform: [esp8266]
+        build_letter: [mqtt]
 
     steps:
       - name: Checkout Repository
@@ -57,6 +58,7 @@ jobs:
             echo "Building ${{ matrix.platform }} - Build mqtt"
             # Copy modules
             cp micropython-mqtt/mqtt_as/mqtt_as.py "$esp_ports_path/modules/mqtt_as.py"
+            cp MicroPython_Statistics/statistics.py "$esp_ports_path/modules/statistics.py"
           elif [ "${{ matrix.build_letter }}" == "stat" ]; then
             echo "Building ${{ matrix.platform }} - Build stat"
             # Copy modules
@@ -75,9 +77,6 @@ jobs:
             esp_ports_path="$PWD/micropython/ports/esp8266"
             echo "Selecting ${{ matrix.platform }} with path $esp_ports_path"
           fi
-          cd $esp_ports_path
-          echo "$PWD"
-          ls
           docker run --rm -v $HOME:$HOME -u $UID -w $PWD hvalev/esp-open-sdk make submodules
           docker run --rm -v $HOME:$HOME -u $UID -w $PWD hvalev/esp-open-sdk make
 

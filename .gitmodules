@@ -1,6 +1,9 @@
 [submodule "micropython-mqtt"]
-	path = micropython-mqtt
+	path = libs/micropython-mqtt
 	url = https://github.com/peterhinch/micropython-mqtt.git
 [submodule "MicroPython_Statistics"]
-	path = MicroPython_Statistics
+	path = libs/MicroPython_Statistics
 	url = https://github.com/rcolistete/MicroPython_Statistics.git
+[submodule "micropython"]
+	path = micropython
+	url = https://github.com/micropython/micropython.git

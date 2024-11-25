@@ -10,3 +10,6 @@
 [submodule "libs/hamqa"]
 	path = libs/hamqa
 	url = https://github.com/hvalev/hamqa.git
+[submodule "libs/hx711"]
+	path = libs/hx711
+	url = https://github.com/robert-hh/hx711.git

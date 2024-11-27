@@ -2,7 +2,9 @@
 git submodule update --init --recursive --progress ./libs
 git submodule update --init --recursive --progress ./micropython 
 docker run --rm -v $HOME:$HOME -u $UID -w $PWD/micropython hvalev/esp-open-sdk make -C mpy-cross
-cp ./libs/micropython-mqtt/mqtt_as/mqtt_as.py "./micropython/ports/esp8266/modules/mqtt_as.py"
+cp ./libs/micropython-mqtt/mqtt_as/__init__.py "./micropython/ports/esp8266/modules/mqtt_as.py"
+#TODO to enable MQTTv5 copy this file as well
+#cp ./libs/micropython-mqtt/mqtt_as/mqtt_v5_properties.py.py "./micropython/ports/esp8266/modules/mqtt_v5_properties.py.py"
 cp ./libs/MicroPython_Statistics/statistics.py "./micropython/ports/esp8266/modules/statistics.py"
 cp ./libs/hamqa/hamqa/hamqa_mpy.py "./micropython/ports/esp8266/modules/hamqa.py"
 cp ./libs/hx711/hx711_gpio.py "./micropython/ports/esp8266/modules/hx711.py"
